@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ractive_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+  app:
+    build:
+      context: ./backend
+    container_name: ractive_app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=example_password
+      - DB_NAME=restaurant_db
+    depends_on:
+      - mysql
+    volumes:
+      - ./frontend:/usr/src/app/../frontend:ro
+volumes:
+  mysql-data:
